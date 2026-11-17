@@ -66,4 +66,156 @@
           <div class="camera-frame" id="webcam-container">
             <span class="cam-idle">CAMERA STANDBY</span>
           </div>
-          <div class="
+          <div class="output-header">Output</div>
+          <div id="label-container" class="predictions">
+            <div class="bar-row">
+              <span class="bar-label">Laptop_Open</span>
+              <div class="bar-track"><div class="bar-fill" style="width: 0%;"></div><span class="bar-pct">0%</span></div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Laptop_Closed</span>
+              <div class="bar-track"><div class="bar-fill" style="width: 0%;"></div><span class="bar-pct">0%</span></div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">No_Laptop</span>
+              <div class="bar-track"><div class="bar-fill" style="width: 0%;"></div><span class="bar-pct">0%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: Dataset Corpus -->
+    <section class="slide" data-slide="1">
+      <div class="slide-bg bg-2"></div>
+      <div class="slide-vignette"></div>
+
+      <div class="slide-content">
+        <div class="badge-row">
+          <span class="rank-badge">DATA</span>
+          <span>3 Contributors &bull; 100+ Images Each</span>
+        </div>
+        <h2 class="hero-title">TRAINING<br />CORPUS</h2>
+        <p class="meta-line">Laptop_Open (102) &bull; Laptop_Closed (102) &bull; No_Laptop (100)</p>
+        <p class="description">
+          Every image was captured natively across varied desk surfaces, screen brightness levels, and viewing angles to prevent background overfitting.
+        </p>
+
+        <div class="mini-cards">
+          <div class="mini-card">
+            <span>01 // OPEN</span>
+            <strong>102 Samples</strong>
+            <p>Active screens, varied hinge angles, and multiple desk textures.</p>
+          </div>
+          <div class="mini-card">
+            <span>02 // CLOSED</span>
+            <strong>102 Samples</strong>
+            <p>Shut lids from low-profile side views and overhead angles.</p>
+          </div>
+          <div class="mini-card">
+            <span>03 // EMPTY</span>
+            <strong>100 Samples</strong>
+            <p>Matched empty surfaces captured without a laptop present.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: Algorithm Demonstration Video -->
+    <section class="slide" data-slide="2">
+      <div class="slide-bg bg-3"></div>
+      <div class="slide-vignette"></div>
+
+      <div class="slide-content">
+        <div class="badge-row">
+          <span class="rank-badge">DEMO</span>
+          <span>Live Inference Walkthrough</span>
+        </div>
+        <h2 class="hero-title">MODEL IN<br />ACTION</h2>
+        <p class="meta-line">Screen Capture &bull; Edge-Case Testing &bull; Confidence Scores</p>
+        <!-- Replace the div below with <video src="demo.mp4" controls class="demo-video"></video> when ready -->
+        <div class="video-frame">
+          <p>Embedded demonstration video slot (Final Upload: Nov 24)</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: Project Statement & Unmasking AI -->
+    <section class="slide" data-slide="3">
+      <div class="slide-bg bg-4"></div>
+      <div class="slide-vignette"></div>
+
+      <div class="slide-content">
+        <div class="badge-row">
+          <span class="rank-badge">ESSAY</span>
+          <span>Project Statement &amp; Critical Reflection</span>
+        </div>
+        <h2 class="hero-title">UNMASKING<br />THE MODEL</h2>
+        <p class="meta-line">Joy Buolamwini &bull; Coded Gaze &bull; Dataset Representation</p>
+        <div class="statement-scroll">
+          <p>[Paste your 1,000+ word project statement and reflection on Joy Buolamwini's <em>Unmasking AI</em> here.]</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom-Right Indicator Pills + Pause/Play Toggle -->
+    <div class="carousel-controls">
+      <div class="dots" id="dots-container">
+        <button class="dot active" type="button" onclick="goToSlide(0)" aria-label="Screen 1"></button>
+        <button class="dot" type="button" onclick="goToSlide(1)" aria-label="Screen 2"></button>
+        <button class="dot" type="button" onclick="goToSlide(2)" aria-label="Screen 3"></button>
+        <button class="dot" type="button" onclick="goToSlide(3)" aria-label="Screen 4"></button>
+      </div>
+      <button class="pause-btn" id="pause-btn" type="button" onclick="toggleAutoplay()" aria-label="Pause or play slideshow">&#10074;&#10074;</button>
+    </div>
+  </main>
+
+  <script>
+    /* --- State Variables Declared First --- */
+    const URL = "https://teachablemachine.withgoogle.com/models/omq-yZ4EE/";
+    let model = null;
+    let webcam = null;
+    let labelContainer = null;
+    let maxPredictions = 3;
+    let animationId = null;
+    let isRunning = false;
+
+    let currentSlide = 0;
+    let autoplay = true;
+    const slides = document.querySelectorAll(".slide");
+    const dots = document.querySelectorAll(".dot");
+
+    /* --- Slideshow & Arrow Navigation --- */
+    function goToSlide(index) {
+      slides[currentSlide].classList.remove("active");
+      dots[currentSlide].classList.remove("active");
+      currentSlide = (index + slides.length) % slides.length;
+      slides[currentSlide].classList.add("active");
+      dots[currentSlide].classList.add("active");
+    }
+
+    function changeSlide(step) {
+      goToSlide(currentSlide + step);
+    }
+
+    setInterval(() => {
+      if (autoplay && !isRunning) changeSlide(1);
+    }, 6500);
+
+    function toggleAutoplay() {
+      autoplay = !autoplay;
+      document.getElementById("pause-btn").innerHTML = autoplay ? "&#10074;&#10074;" : "&#9654;";
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") changeSlide(1);
+      if (e.key === "ArrowLeft") changeSlide(-1);
+    });
+
+    /* --- Teachable Machine Classifier --- */
+    function createBarSlots(count) {
+      labelContainer = document.getElementById("label-container");
+      labelContainer.innerHTML = "";
+      for (let i = 0; i < count; i++) {
+        const row = document.createElement("div");
+        row.className = "bar-row
