@@ -14,16 +14,16 @@
     <nav class="navbar">
       <div class="logo">LIS 500 • Project #3</div>
       <div class="nav-links">
-        <a href="https://github.com/YOUR-USERNAME/YOUR-REPO" target="_blank">GitHub Repo</a>
-        <a href="https://github.com/YOUR-USERNAME/YOUR-REPO/tree/main/dataset" target="_blank">Dataset</a>
-        <a href="https://teachablemachine.withgoogle.com/models/YOUR_MODEL_ID/" target="_blank">TM Model</a>
+        <a href="https://github.com/jesseijiwola/LIS510Project3" target="_blank">GitHub Repo</a>
+        <a href="https://github.com/jesseijiwola/LIS510Project3/tree/main/Dataset" target="_blank">Dataset</a>
+        <a href="https://teachablemachine.withgoogle.com/models/omq-yZ4EE/" target="_blank">TM Model</a>
       </div>
     </nav>
 
     <div class="hero-content">
       <p class="eyebrow">Teachable Machine Image Classifier</p>
       <h1>What state is the laptop in?</h1>
-      <p class="subtitle">Trained on 300+ original images to detect open laptops, closed lids, and empty desks.</p>
+      <p class="subtitle">Trained on 300 original images to detect open laptops, closed lids, and empty desks.</p>
       <div class="team-pill">Team: Jesse Ijiwola • Sam Weinbach • Joel Koenig</div>
     </div>
   </header>
@@ -54,12 +54,12 @@
       <div class="card">
         <span class="tag">Class 02</span>
         <h3>Laptop_Closed</h3>
-        <p>Shut lids from low-profile side views, overhead angles, and varied lighting (102 images).</p>
+        <p>Shut lids from side views, overhead angles, and varied lighting (102 images).</p>
       </div>
       <div class="card">
         <span class="tag">Class 03</span>
         <h3>No_Laptop</h3>
-        <p>Matched empty surfaces and desk mats captured to prevent background overfitting (102 images).</p>
+        <p>Matched empty surfaces and desks captured to prevent background overfitting (100 images).</p>
       </div>
     </section>
 
@@ -78,7 +78,7 @@
   </main>
 
   <script>
-    const URL = "https://teachablemachine.withgoogle.com/models/70r4j9kzf/";
+    const URL = "https://teachablemachine.withgoogle.com/models/omq-yZ4EE/";
     let model, webcam, labelContainer, maxPredictions;
 
     async function init() {
