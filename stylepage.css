@@ -270,6 +270,15 @@ h1 {
   box-shadow: 0 0 28px rgba(56, 189, 248, 0.65);
 }
 
+.btn-stop {
+  background: linear-gradient(135deg, #f87171, #fb7185);
+  box-shadow: 0 0 20px rgba(248, 113, 113, 0.35);
+}
+
+.btn-stop:hover {
+  box-shadow: 0 0 28px rgba(248, 113, 113, 0.65);
+}
+
 .predictions div {
   font-family: "JetBrains Mono", monospace;
   background: rgba(10, 13, 20, 0.95);
