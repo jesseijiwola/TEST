@@ -171,8 +171,7 @@
   </main>
 
   <script>
-    /* --- State Variables Declared First --- */
-    const URL = "https://teachablemachine.withgoogle.com/models/omq-yZ4EE/";
+    const MODEL_URL = "https://teachablemachine.withgoogle.com/models/omq-yZ4EE/";
     let model = null;
     let webcam = null;
     let labelContainer = null;
@@ -185,7 +184,6 @@
     const slides = document.querySelectorAll(".slide");
     const dots = document.querySelectorAll(".dot");
 
-    /* --- Slideshow & Arrow Navigation --- */
     function goToSlide(index) {
       slides[currentSlide].classList.remove("active");
       dots[currentSlide].classList.remove("active");
@@ -198,8 +196,10 @@
       goToSlide(currentSlide + step);
     }
 
-    setInterval(() => {
-      if (autoplay && !isRunning) changeSlide(1);
+    setInterval(function () {
+      if (autoplay && !isRunning) {
+        changeSlide(1);
+      }
     }, 6500);
 
     function toggleAutoplay() {
@@ -207,15 +207,121 @@
       document.getElementById("pause-btn").innerHTML = autoplay ? "&#10074;&#10074;" : "&#9654;";
     }
 
-    document.addEventListener("keydown", (e) => {
+    document.addEventListener("keydown", function (e) {
       if (e.key === "ArrowRight") changeSlide(1);
       if (e.key === "ArrowLeft") changeSlide(-1);
     });
 
-    /* --- Teachable Machine Classifier --- */
     function createBarSlots(count) {
       labelContainer = document.getElementById("label-container");
       labelContainer.innerHTML = "";
       for (let i = 0; i < count; i++) {
         const row = document.createElement("div");
-        row.className = "bar-row
+        row.className = "bar-row";
+
+        const label = document.createElement("span");
+        label.className = "bar-label";
+        label.textContent = "Class " + (i + 1);
+
+        const track = document.createElement("div");
+        track.className = "bar-track";
+
+        const fill = document.createElement("div");
+        fill.className = "bar-fill";
+        fill.style.width = "0%";
+
+        const pct = document.createElement("span");
+        pct.className = "bar-pct";
+        pct.textContent = "0%";
+
+        track.appendChild(fill);
+        track.appendChild(pct);
+        row.appendChild(label);
+        row.appendChild(track);
+        labelContainer.appendChild(row);
+      }
+    }
+
+    async function init() {
+      const startBtn = document.getElementById("start-btn");
+      startBtn.textContent = "Loading...";
+      startBtn.disabled = true;
+
+      try {
+        model = await tmImage.load(MODEL_URL + "model.json", MODEL_URL + "metadata.json");
+        maxPredictions = model.getTotalClasses();
+
+        webcam = new tmImage.Webcam(280, 280, true);
+        await webcam.setup();
+        await webcam.play();
+
+        isRunning = true;
+        autoplay = false;
+        document.getElementById("pause-btn").innerHTML = "&#9654;";
+
+        const container = document.getElementById("webcam-container");
+        container.innerHTML = "";
+        container.appendChild(webcam.canvas);
+
+        startBtn.style.display = "none";
+        startBtn.disabled = false;
+        document.getElementById("stop-btn").style.display = "inline-flex";
+
+        createBarSlots(maxPredictions);
+        animationId = window.requestAnimationFrame(loop);
+      } catch (err) {
+        console.error("Camera/Model init error:", err);
+        startBtn.textContent = "▶ Start Camera";
+        startBtn.disabled = false;
+        alert("Could not start camera or load model. Check webcam permissions and ensure you are viewing over HTTPS or localhost.");
+      }
+    }
+
+    async function loop() {
+      if (!isRunning || !webcam) return;
+      webcam.update();
+      await predict();
+      animationId = window.requestAnimationFrame(loop);
+    }
+
+    async function predict() {
+      if (!isRunning || !model || !webcam) return;
+      const prediction = await model.predict(webcam.canvas);
+      for (let i = 0; i < maxPredictions; i++) {
+        const pct = Math.round(prediction[i].probability * 100);
+        const row = labelContainer.children[i];
+        if (!row) continue;
+        row.querySelector(".bar-label").textContent = prediction[i].className;
+        row.querySelector(".bar-fill").style.width = pct + "%";
+        row.querySelector(".bar-pct").textContent = pct + "%";
+      }
+    }
+
+    async function stopCamera() {
+      isRunning = false;
+      if (animationId) {
+        window.cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+      if (webcam) {
+        await webcam.stop();
+        webcam = null;
+      }
+
+      document.getElementById("stop-btn").style.display = "none";
+      const startBtn = document.getElementById("start-btn");
+      startBtn.textContent = "▶ Start Camera";
+      startBtn.style.display = "inline-flex";
+
+      document.getElementById("webcam-container").innerHTML =
+        '<span class="cam-idle">Camera Off</span>';
+
+      const defaults = ["Laptop_Open", "Laptop_Closed", "No_Laptop"];
+      createBarSlots(defaults.length);
+      defaults.forEach(function (name, idx) {
+        labelContainer.children[idx].querySelector(".bar-label").textContent = name;
+      });
+    }
+  </script>
+</body>
+</html>
