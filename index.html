@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laptop State Classifier — LIS 500</title>
+  <link rel="stylesheet" href="stylepage.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+</head>
+<body>
+
+  <header class="hero">
+    <nav class="navbar">
+      <div class="logo">LIS 500 • Project #3</div>
+      <div class="nav-links">
+        <a href="https://github.com/YOUR-USERNAME/YOUR-REPO" target="_blank">GitHub Repo</a>
+        <a href="https://github.com/YOUR-USERNAME/YOUR-REPO/tree/main/dataset" target="_blank">Dataset</a>
+        <a href="https://teachablemachine.withgoogle.com/models/YOUR_MODEL_ID/" target="_blank">TM Model</a>
+      </div>
+    </nav>
+
+    <div class="hero-content">
+      <p class="eyebrow">Teachable Machine Image Classifier</p>
+      <h1>What state is the laptop in?</h1>
+      <p class="subtitle">Trained on 300+ original images to detect open laptops, closed lids, and empty desks.</p>
+      <div class="team-pill">Team: Jesse Ijiwola • [Teammate 2] • [Teammate 3]</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Live Classifier -->
+    <section class="card classifier-box">
+      <div class="camera-area" id="webcam-container">
+        <button class="btn" type="button" onclick="init()">Start Camera</button>
+      </div>
+      <div class="results-area">
+        <h2>Live Predictions</h2>
+        <p class="muted">Point your webcam at a laptop or empty desk. Scores reflect model confidence.</p>
+        <div id="label-container" class="predictions">
+          <p>Camera inactive — click Start Camera to begin.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 Dataset Class Cards -->
+    <h2 class="section-title">Dataset Classes (306 Original Photos)</h2>
+    <section class="grid-3">
+      <div class="card">
+        <span class="tag">Class 01</span>
+        <h3>Laptop_Open</h3>
+        <p>Open hinges, varied screen brightness, front/side angles, and different desk surfaces (102 images).</p>
+      </div>
+      <div class="card">
+        <span class="tag">Class 02</span>
+        <h3>Laptop_Closed</h3>
+        <p>Shut lids from low-profile side views, overhead angles, and varied lighting (102 images).</p>
+      </div>
+      <div class="card">
+        <span class="tag">Class 03</span>
+        <h3>No_Laptop</h3>
+        <p>Matched empty surfaces and desk mats captured to prevent background overfitting (102 images).</p>
+      </div>
+    </section>
+
+    <!-- Embedded Demo Video -->
+    <section class="card">
+      <h2>Algorithm Demonstration</h2>
+      <!-- Replace with <video src="demo.mp4" controls></video> when recorded -->
+      <div class="video-box">Embedded demonstration video coming for final upload (Nov 24).</div>
+    </section>
+
+    <!-- Project Statement -->
+    <section class="card">
+      <h2>Project Statement &amp; Reflections on <em>Unmasking AI</em></h2>
+      <p>[Paste your 1,000+ word project statement and reflection on Joy Buolamwini's <em>Unmasking AI</em> here.]</p>
+    </section>
+  </main>
+
+  <script>
+    const URL = "https://teachablemachine.withgoogle.com/models/YOUR_MODEL_ID/";
+    let model, webcam, labelContainer, maxPredictions;
+
+    async function init() {
+      model = await tmImage.load(URL + "model.json", URL + "metadata.json");
+      maxPredictions = model.getTotalClasses();
+
+      webcam = new tmImage.Webcam(300, 300, true);
+      await webcam.setup();
+      await webcam.play();
+      window.requestAnimationFrame(loop);
+
+      const container = document.getElementById("webcam-container");
+      container.innerHTML = "";
+      container.appendChild(webcam.canvas);
+
+      labelContainer = document.getElementById("label-container");
+      labelContainer.innerHTML = "";
+      for (let i = 0; i < maxPredictions; i++) {
+        labelContainer.appendChild(document.createElement("div"));
+      }
+    }
+
+    async function loop() {
+      webcam.update();
+      await predict();
+      window.requestAnimationFrame(loop);
+    }
+
+    async function predict() {
+      const prediction = await model.predict(webcam.canvas);
+      for (let i = 0; i < maxPredictions; i++) {
+        const pct = (prediction[i].probability * 100).toFixed(1);
+        labelContainer.childNodes[i].textContent = `${prediction[i].className}: ${pct}%`;
+      }
+    }
+  </script>
+</body>
+</html>
