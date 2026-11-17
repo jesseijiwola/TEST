@@ -40,7 +40,7 @@
     <!-- Live Classifier -->
     <section class="card classifier-box">
       <div class="camera-area" id="webcam-container">
-        <button class="btn" type="button" onclick="init()">Start Camera</button>
+        <button class="btn" id="start-btn" type="button" onclick="init()">Start Camera</button>
       </div>
       <div class="results-area">
         <h2>Live Predictions</h2>
@@ -48,6 +48,7 @@
         <div id="label-container" class="predictions">
           <p>Camera inactive — click Start Camera to begin.</p>
         </div>
+        <button class="btn btn-stop" id="stop-btn" type="button" onclick="stopCamera()" style="display: none; margin-top: 0.75rem;">Stop Camera</button>
       </div>
     </section>
 
@@ -88,19 +89,27 @@
   <script>
     const URL = "https://teachablemachine.withgoogle.com/models/omq-yZ4EE/";
     let model, webcam, labelContainer, maxPredictions;
+    let animationId = null;
+    let isRunning = false;
 
     async function init() {
+      const startBtn = document.getElementById("start-btn");
+      if (startBtn) startBtn.textContent = "Loading...";
+
       model = await tmImage.load(URL + "model.json", URL + "metadata.json");
       maxPredictions = model.getTotalClasses();
 
       webcam = new tmImage.Webcam(300, 300, true);
       await webcam.setup();
       await webcam.play();
-      window.requestAnimationFrame(loop);
+      isRunning = true;
+      animationId = window.requestAnimationFrame(loop);
 
       const container = document.getElementById("webcam-container");
       container.innerHTML = "";
       container.appendChild(webcam.canvas);
+
+      document.getElementById("stop-btn").style.display = "inline-block";
 
       labelContainer = document.getElementById("label-container");
       labelContainer.innerHTML = "";
@@ -110,17 +119,37 @@
     }
 
     async function loop() {
+      if (!isRunning) return;
       webcam.update();
       await predict();
-      window.requestAnimationFrame(loop);
+      animationId = window.requestAnimationFrame(loop);
     }
 
     async function predict() {
+      if (!isRunning) return;
       const prediction = await model.predict(webcam.canvas);
       for (let i = 0; i < maxPredictions; i++) {
         const pct = (prediction[i].probability * 100).toFixed(1);
         labelContainer.childNodes[i].textContent = `${prediction[i].className}: ${pct}%`;
       }
+    }
+
+    async function stopCamera() {
+      isRunning = false;
+      if (animationId) {
+        window.cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+      if (webcam) {
+        await webcam.stop();
+        webcam = null;
+      }
+
+      document.getElementById("stop-btn").style.display = "none";
+      document.getElementById("webcam-container").innerHTML =
+        '<button class="btn" id="start-btn" type="button" onclick="init()">Start Camera</button>';
+      document.getElementById("label-container").innerHTML =
+        "<p>Camera stopped — click Start Camera to resume.</p>";
     }
   </script>
 </body>
