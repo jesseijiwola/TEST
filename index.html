@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LIS 500 Project 3</title>
+  <title>Laptop State Classifier — LIS 500</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -13,80 +13,187 @@
 </head>
 <body>
 
-  <!-- Animated Background Grid & Glow -->
-  <div class="bg-grid" aria-hidden="true"></div>
-  <div class="bg-orb orb-1" aria-hidden="true"></div>
-  <div class="bg-orb orb-2" aria-hidden="true"></div>
-
-  <header class="hero">
-    <nav class="navbar">
-      <div class="logo"><span class="pulse-dot"></span> LIS 500 • Project #3</div>
-      <div class="nav-links">
-        <a href="https://github.com/jesseijiwola/LIS510Project3" target="_blank">GitHub Repo</a>
-        <a href="https://github.com/jesseijiwola/LIS510Project3/tree/main/Dataset" target="_blank">Dataset</a>
-        <a href="https://teachablemachine.withgoogle.com/models/omq-yZ4EE/" target="_blank">TM Model</a>
-      </div>
-    </nav>
-
-    <div class="hero-content">
-      <p class="eyebrow">// Teachable Machine Image Classifier</p>
-      <h1>What state is the laptop in?</h1>
-      <p class="subtitle">Trained on 304 original images to detect open laptops, closed lids, and empty desks.</p>
-      <div class="team-pill">Team: Jesse Ijiwola • Sam Weinbach • Joel Koenig</div>
+  <!-- Top Icon Bar -->
+  <header class="top-nav">
+    <div class="brand">
+      <span class="pulse-dot"></span>
+      <span>LIS 500 • PROJECT #3</span>
     </div>
+
+    <nav class="icon-links" aria-label="Project Links">
+      <a class="icon-btn" href="https://github.com/jesseijiwola/LIS510Project3" target="_blank" title="GitHub Repository" aria-label="GitHub Repository">
+        <img src="25231.png" alt="GitHub Repository" class="invert-icon" />
+      </a>
+      <a class="icon-btn" href="https://github.com/jesseijiwola/LIS510Project3/tree/main/Dataset" target="_blank" title="Dataset Folder" aria-label="Dataset Folder">
+        <img src="foldercustomgithub_93186.png" alt="Dataset Folder" class="invert-icon" />
+      </a>
+      <a class="icon-btn" href="https://teachablemachine.withgoogle.com/models/omq-yZ4EE/" target="_blank" title="Teachable Machine Model" aria-label="Teachable Machine Model">
+        <img src="images.png" alt="Teachable Machine Model" />
+      </a>
+    </nav>
   </header>
 
-  <main class="container">
-    <!-- Live Classifier -->
-    <section class="card classifier-box">
-      <div class="camera-area" id="webcam-container">
-        <button class="btn" id="start-btn" type="button" onclick="init()">Start Camera</button>
-      </div>
-      <div class="results-area">
-        <h2>Live Predictions</h2>
-        <p class="muted">Point your webcam at a laptop or empty desk. Scores reflect model confidence.</p>
-        <div id="label-container" class="predictions">
-          <p>Camera inactive — click Start Camera to begin.</p>
+  <!-- Main Full-Screen Carousel Body -->
+  <main class="showcase" id="showcase">
+    <!-- Left / Right Side Arrows -->
+    <button class="nav-arrow prev" type="button" onclick="changeSlide(-1)" aria-label="Previous Screen">&#10094;</button>
+    <button class="nav-arrow next" type="button" onclick="changeSlide(1)" aria-label="Next Screen">&#10095;</button>
+
+    <!-- SLIDE 1: Hero + Live Classifier -->
+    <section class="slide active" data-slide="0">
+      <div class="slide-bg bg-1"></div>
+      <div class="slide-vignette"></div>
+
+      <div class="slide-content split-layout">
+        <div class="hero-copy">
+          <div class="badge-row">
+            <span class="rank-badge">TM</span>
+            <span>#1 in Vision • 304 Original Samples</span>
+          </div>
+          <h1 class="hero-title">LAPTOP<br />STATE AI</h1>
+          <p class="meta-line">2026 &bull; 3 Classes &bull; TensorFlow.js &bull; MobileNet</p>
+          <p class="description">
+            Trained on 304 original photographs by Jesse Ijiwola, Sam Weinbach, and Joel Koenig to classify open laptops, closed lids, and empty desks in real time.
+          </p>
+          <div class="action-row">
+            <button class="btn-primary" id="start-btn" type="button" onclick="init()">&#9654; Start Camera</button>
+            <button class="btn-secondary" id="stop-btn" type="button" onclick="stopCamera()" style="display: none;">&#9632; Stop Camera</button>
+            <button class="btn-secondary" type="button" onclick="goToSlide(3)">&#9432; Read Statement</button>
+          </div>
         </div>
-        <button class="btn btn-stop" id="stop-btn" type="button" onclick="stopCamera()" style="display: none; margin-top: 0.75rem;">Stop Camera</button>
+
+        <div class="classifier-stage">
+          <div class="camera-frame" id="webcam-container">
+            <span class="cam-idle">CAMERA STANDBY</span>
+          </div>
+          <div id="label-container" class="predictions">
+            <div>Laptop_Open: 0.0%</div>
+            <div>Laptop_Closed: 0.0%</div>
+            <div>No_Laptop: 0.0%</div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- 3 Dataset Class Cards -->
-    <h2 class="section-title">Dataset Classes (304 Original Photos)</h2>
-    <section class="grid-3">
-      <div class="card">
-        <span class="tag">Class 01</span>
-        <h3>Laptop_Open</h3>
-        <p>Open hinges, varied screen brightness, front/side angles, and different desk surfaces (102 images).</p>
-      </div>
-      <div class="card">
-        <span class="tag">Class 02</span>
-        <h3>Laptop_Closed</h3>
-        <p>Shut lids from side views, overhead angles, and varied lighting (102 images).</p>
-      </div>
-      <div class="card">
-        <span class="tag">Class 03</span>
-        <h3>No_Laptop</h3>
-        <p>Matched empty surfaces and desks captured to prevent background overfitting (100 images).</p>
+    <!-- SLIDE 2: Dataset Corpus -->
+    <section class="slide" data-slide="1">
+      <div class="slide-bg bg-2"></div>
+      <div class="slide-vignette"></div>
+
+      <div class="slide-content">
+        <div class="badge-row">
+          <span class="rank-badge">DATA</span>
+          <span>3 Contributors &bull; 100+ Images Each</span>
+        </div>
+        <h2 class="hero-title">TRAINING<br />CORPUS</h2>
+        <p class="meta-line">Laptop_Open (102) &bull; Laptop_Closed (102) &bull; No_Laptop (100)</p>
+        <p class="description">
+          Every image was captured natively across varied desk surfaces, screen brightness levels, and viewing angles to prevent background overfitting.
+        </p>
+
+        <div class="mini-cards">
+          <div class="mini-card">
+            <span>01 // OPEN</span>
+            <strong>102 Samples</strong>
+            <p>Active screens, varied hinge angles, and multiple desk textures.</p>
+          </div>
+          <div class="mini-card">
+            <span>02 // CLOSED</span>
+            <strong>102 Samples</strong>
+            <p>Shut lids from low-profile side views and overhead angles.</p>
+          </div>
+          <div class="mini-card">
+            <span>03 // EMPTY</span>
+            <strong>100 Samples</strong>
+            <p>Matched empty surfaces captured without a laptop present.</p>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Embedded Demo Video -->
-    <section class="card">
-      <h2>Algorithm Demonstration</h2>
-      <!-- Replace with <video src="demo.mp4" controls></video> when recorded -->
-      <div class="video-box">Embedded demonstration video coming for final upload (Nov 24).</div>
+    <!-- SLIDE 3: Algorithm Demonstration Video -->
+    <section class="slide" data-slide="2">
+      <div class="slide-bg bg-3"></div>
+      <div class="slide-vignette"></div>
+
+      <div class="slide-content">
+        <div class="badge-row">
+          <span class="rank-badge">DEMO</span>
+          <span>Live Inference Walkthrough</span>
+        </div>
+        <h2 class="hero-title">MODEL IN<br />ACTION</h2>
+        <p class="meta-line">Screen Capture &bull; Edge-Case Testing &bull; Confidence Scores</p>
+        <!-- Replace the div below with <video src="demo.mp4" controls class="demo-video"></video> when ready -->
+        <div class="video-frame">
+          <p>Embedded demonstration video slot (Final Upload: Nov 24)</p>
+        </div>
+      </div>
     </section>
 
-    <!-- Project Statement -->
-    <section class="card">
-      <h2>Project Statement &amp; Reflections on <em>Unmasking AI</em></h2>
-      <p>[Paste your 1,000+ word project statement and reflection on Joy Buolamwini's <em>Unmasking AI</em> here.]</p>
+    <!-- SLIDE 4: Project Statement & Unmasking AI -->
+    <section class="slide" data-slide="3">
+      <div class="slide-bg bg-4"></div>
+      <div class="slide-vignette"></div>
+
+      <div class="slide-content">
+        <div class="badge-row">
+          <span class="rank-badge">ESSAY</span>
+          <span>Project Statement &amp; Critical Reflection</span>
+        </div>
+        <h2 class="hero-title">UNMASKING<br />THE MODEL</h2>
+        <p class="meta-line">Joy Buolamwini &bull; Coded Gaze &bull; Dataset Representation</p>
+        <div class="statement-scroll">
+          <p>[Paste your 1,000+ word project statement and reflection on Joy Buolamwini's <em>Unmasking AI</em> here.]</p>
+        </div>
+      </div>
     </section>
+
+    <!-- Bottom-Right Indicator Pills + Pause/Play Toggle -->
+    <div class="carousel-controls">
+      <div class="dots" id="dots-container">
+        <button class="dot active" type="button" onclick="goToSlide(0)" aria-label="Screen 1"></button>
+        <button class="dot" type="button" onclick="goToSlide(1)" aria-label="Screen 2"></button>
+        <button class="dot" type="button" onclick="goToSlide(2)" aria-label="Screen 3"></button>
+        <button class="dot" type="button" onclick="goToSlide(3)" aria-label="Screen 4"></button>
+      </div>
+      <button class="pause-btn" id="pause-btn" type="button" onclick="toggleAutoplay()" aria-label="Pause or play slideshow">&#10074;&#10074;</button>
+    </div>
   </main>
 
   <script>
+    /* --- Slideshow & Arrow Navigation --- */
+    let currentSlide = 0;
+    let autoplay = true;
+    const slides = document.querySelectorAll(".slide");
+    const dots = document.querySelectorAll(".dot");
+
+    function goToSlide(index) {
+      slides[currentSlide].classList.remove("active");
+      dots[currentSlide].classList.remove("active");
+      currentSlide = (index + slides.length) % slides.length;
+      slides[currentSlide].classList.add("active");
+      dots[currentSlide].classList.add("active");
+    }
+
+    function changeSlide(step) {
+      goToSlide(currentSlide + step);
+    }
+
+    let slideTimer = setInterval(() => {
+      if (autoplay && !isRunning) changeSlide(1);
+    }, 6500);
+
+    function toggleAutoplay() {
+      autoplay = !autoplay;
+      document.getElementById("pause-btn").innerHTML = autoplay ? "&#10074;&#10074;" : "&#9654;";
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") changeSlide(1);
+      if (e.key === "ArrowLeft") changeSlide(-1);
+    });
+
+    /* --- Teachable Machine Classifier --- */
     const URL = "https://teachablemachine.withgoogle.com/models/omq-yZ4EE/";
     let model, webcam, labelContainer, maxPredictions;
     let animationId = null;
@@ -94,22 +201,25 @@
 
     async function init() {
       const startBtn = document.getElementById("start-btn");
-      if (startBtn) startBtn.textContent = "Loading...";
+      startBtn.textContent = "Loading...";
 
       model = await tmImage.load(URL + "model.json", URL + "metadata.json");
       maxPredictions = model.getTotalClasses();
 
-      webcam = new tmImage.Webcam(300, 300, true);
+      webcam = new tmImage.Webcam(280, 280, true);
       await webcam.setup();
       await webcam.play();
       isRunning = true;
+      autoplay = false;
+      document.getElementById("pause-btn").innerHTML = "&#9654;";
       animationId = window.requestAnimationFrame(loop);
 
       const container = document.getElementById("webcam-container");
       container.innerHTML = "";
       container.appendChild(webcam.canvas);
 
-      document.getElementById("stop-btn").style.display = "inline-block";
+      startBtn.style.display = "none";
+      document.getElementById("stop-btn").style.display = "inline-flex";
 
       labelContainer = document.getElementById("label-container");
       labelContainer.innerHTML = "";
@@ -146,10 +256,14 @@
       }
 
       document.getElementById("stop-btn").style.display = "none";
+      const startBtn = document.getElementById("start-btn");
+      startBtn.textContent = "▶ Start Camera";
+      startBtn.style.display = "inline-flex";
+
       document.getElementById("webcam-container").innerHTML =
-        '<button class="btn" id="start-btn" type="button" onclick="init()">Start Camera</button>';
+        '<span class="cam-idle">CAMERA STANDBY</span>';
       document.getElementById("label-container").innerHTML =
-        "<p>Camera stopped — click Start Camera to resume.</p>";
+        "<div>Laptop_Open: 0.0%</div><div>Laptop_Closed: 0.0%</div><div>No_Laptop: 0.0%</div>";
     }
   </script>
 </body>
