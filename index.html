@@ -4,15 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Laptop State Classifier — LIS 500</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="stylepage.css" />
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 </head>
 <body>
 
+  <!-- Animated Background Grid & Glow -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+
   <header class="hero">
     <nav class="navbar">
-      <div class="logo">LIS 500 • Project #3</div>
+      <div class="logo"><span class="pulse-dot"></span> LIS 500 • Project #3</div>
       <div class="nav-links">
         <a href="https://github.com/jesseijiwola/LIS510Project3" target="_blank">GitHub Repo</a>
         <a href="https://github.com/jesseijiwola/LIS510Project3/tree/main/Dataset" target="_blank">Dataset</a>
@@ -21,9 +29,9 @@
     </nav>
 
     <div class="hero-content">
-      <p class="eyebrow">Teachable Machine Image Classifier</p>
+      <p class="eyebrow">// Teachable Machine Image Classifier</p>
       <h1>What state is the laptop in?</h1>
-      <p class="subtitle">Trained on 300 original images to detect open laptops, closed lids, and empty desks.</p>
+      <p class="subtitle">Trained on 304 original images to detect open laptops, closed lids, and empty desks.</p>
       <div class="team-pill">Team: Jesse Ijiwola • Sam Weinbach • Joel Koenig</div>
     </div>
   </header>
@@ -44,7 +52,7 @@
     </section>
 
     <!-- 3 Dataset Class Cards -->
-    <h2 class="section-title">Dataset Classes (306 Original Photos)</h2>
+    <h2 class="section-title">Dataset Classes (304 Original Photos)</h2>
     <section class="grid-3">
       <div class="card">
         <span class="tag">Class 01</span>
