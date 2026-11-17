@@ -74,7 +74,6 @@ html, body {
   object-fit: contain;
 }
 
-/* Turns black PNG icons crisp white on the dark button */
 .invert-icon {
   filter: invert(1) brightness(1.1);
 }
@@ -143,7 +142,6 @@ html, body {
   transform: scale(1);
 }
 
-/* Distinct Atmospheric Backdrops per Screen */
 .bg-1 {
   background:
     radial-gradient(circle at 72% 35%, rgba(56, 189, 248, 0.22), transparent 45%),
@@ -171,7 +169,6 @@ html, body {
     linear-gradient(135deg, #09080d 0%, #181320 55%, #06070a 100%);
 }
 
-/* Bottom & Left Vignette like Streaming Hero */
 .slide-vignette {
   position: absolute;
   inset: 0;
@@ -181,7 +178,6 @@ html, body {
     linear-gradient(0deg, #06070a 0%, transparent 32%);
 }
 
-/* Slide Content Animation */
 .slide-content {
   width: 100%;
   max-width: 1180px;
@@ -249,7 +245,6 @@ html, body {
   margin-bottom: 1.5rem;
 }
 
-/* Streaming-Style Action Buttons */
 .action-row {
   display: flex;
   gap: 0.85rem;
@@ -293,8 +288,8 @@ html, body {
 
 /* Right-Side Live Classifier Box */
 .classifier-stage {
-  background: rgba(12, 15, 23, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(12, 15, 23, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 16px;
   padding: 1.25rem;
   backdrop-filter: blur(12px);
@@ -303,15 +298,15 @@ html, body {
 
 .camera-frame {
   width: 100%;
-  height: 250px;
+  height: 245px;
   background: #06070a;
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.95rem;
 }
 
 .camera-frame canvas {
@@ -327,14 +322,58 @@ html, body {
   letter-spacing: 0.1em;
 }
 
-.predictions div {
+.output-header {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #9ca3af;
+  margin-bottom: 0.65rem;
+}
+
+/* All-White Animated Output Bars (Matching Teachable Machine Style) */
+.bar-row {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.bar-label {
   font-family: "JetBrains Mono", monospace;
-  font-size: 0.82rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-left: 3px solid #38bdf8;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  margin-bottom: 0.45rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar-track {
+  position: relative;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.bar-fill {
+  height: 100%;
+  background: #ffffff;
+  border-radius: 7px;
+  transition: width 0.14s ease-out;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.45);
+}
+
+.bar-pct {
+  position: absolute;
+  right: 10px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  mix-blend-mode: difference;
 }
 
 /* Slide 2 Mini Cards */
@@ -407,7 +446,7 @@ html, body {
   line-height: 1.65;
 }
 
-/* Bottom-Right Carousel Pills + Pause Toggle (Matching Screenshot) */
+/* Bottom-Right Carousel Pills + Pause/Play Toggle */
 .carousel-controls {
   position: fixed;
   bottom: 1.6rem;
